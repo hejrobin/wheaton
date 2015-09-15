@@ -15,6 +15,7 @@ describe 'Wheaton/Event/Emitter', ->
   it 'registers an event listener', ->
     numEventListeners = eventEmitter.listenerCount 'jestTestEvent'
     eventEmitter.on 'jestTestEvent', -> return
+
     expect(eventEmitter.listenerCount 'jestTestEvent')
       .toBeGreaterThan numEventListeners
 
@@ -23,6 +24,7 @@ describe 'Wheaton/Event/Emitter', ->
     eventEmitter.on 'jestTestEvent', eventCallback
     numEventListeners = eventEmitter.listenerCount 'jestTestEvent'
     eventEmitter.off 'jestTestEvent', eventCallback
+
     expect(eventEmitter.listenerCount 'jestTestEvent')
       .toBeLessThan numEventListeners
 
@@ -30,6 +32,7 @@ describe 'Wheaton/Event/Emitter', ->
     eventCallback = -> 1337
     eventEmitter.on 'jestTestEvent', eventCallback
     eventEmitter.emit 'jestTestEvent'
+
     expect(eventEmitter.emit)
       .toBeCalledWith 'jestTestEvent'
 
@@ -43,8 +46,10 @@ describe 'Wheaton/Event/Emitter', ->
     eventCallback = -> 1337
     eventEmitter.on 'jestTestEvent', eventCallback
     eventEmitter.emit 'jestTestEvent'
+
     expect(eventEmitter.emit)
       .toBeCalledWith 'jestTestEvent'
+
     expect(firstMockCall).toBeGreaterThan secondMockCall
 
   it 'does not add more listeners than maxListeners allows', ->
@@ -52,4 +57,5 @@ describe 'Wheaton/Event/Emitter', ->
     eventEmitter.on 'jestTestEvent', -> 1
     eventEmitter.on 'jestTestEvent', -> 2
     eventEmitter.on 'jestTestEvent', -> 3
+
     expect(eventEmitter.listenerCount 'jestTestEvent').toBe 1

@@ -5,13 +5,13 @@ utils                     = require '../utils'
 
 class Storage
 
+  {get, set} = mutable @::
+
   _dataStore = {}
 
   constructor: (dataStore = {}) ->
     @replace dataStore
     return
-
-  {get, set} = mutable @::
 
   get 'store', ->
     _dataStore
@@ -38,6 +38,9 @@ class Storage
 
   get 'randomKey', ->
     @randomKeyFrom @store
+
+  get 'random', ->
+    @store[@randomKey]
 
   randomKeyFrom: (object) ->
     keys = Object.keys object
