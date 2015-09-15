@@ -8,7 +8,7 @@ describe 'Wheaton/Card', ->
 
   beforeEach ->
     Card = require cardClassPath
-    card = new Card 'jestTestCard'
+    card = new Card 'jestTestCard',
       onDraw: do jest.genMockFunction
       onPlay: do jest.genMockFunction
       onPalm: do jest.genMockFunction
