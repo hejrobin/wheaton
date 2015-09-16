@@ -119,6 +119,12 @@ class Storage
     @replace _store
     this
 
+  pop: ->
+    @grab @lastKey
+
+  shift: ->
+    @grab @firstKey
+
   destroy: ->
     @data = {}
     this

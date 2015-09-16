@@ -1,34 +1,16 @@
 Emitter                   = require '../event/emitter'
-utils                     = require '../utils'
-{extend, mutable}         = utils
-{serialize}               = utils
+Properties                = require './properties'
+{extend}                  = require '../utils'
 
 class Card extends Emitter
 
-  {get, set} = mutable @::
-
-  _isDrawn = no
-
-  _isPlayed = no
-
-  _isPalmed = no
-
-  _isDiscarded = no
-
-  get 'drawn', -> _isDrawn
-
-  get 'played', -> _isPlayed
-
-  get 'palmed', -> _isPalmed
-
-  get 'discarded', -> _isDiscarded
-
-  get 'serialized', ->
-    serialize
-      isDrawn: _isDrawn
-      isPlayed: _isPlayed
-      isPalmed: _isPalmed
-      isDiscarded: _isDiscarded
+  defaultProperties =
+    guid: readonly: yes, validates: (property) -> typeof property is 'string'
+    name: readonly: yes, validates: (property) -> typeof property is 'string'
+    drawn: default: no, validates: (property) -> typeof property is 'boolean'
+    played: default: no, validates: (property) -> typeof property is 'boolean'
+    palmed: default: no, validates: (property) -> typeof property is 'boolean'
+    discarded: default: no, validates: (property) -> typeof property is 'boolean'
 
   defaultOptions:
     onDraw: -> return
@@ -39,10 +21,13 @@ class Card extends Emitter
 
   instanceOptions: {}
 
-  cardName: null
-
-  constructor: (@cardName, instanceOptions = {}) ->
+  constructor: (cardProperties = {}) ->
+    instanceOptions = cardProperties.instanceOptions ? {}
+    delete cardProperties.instanceOptions
+    cardProperties = Properties.normalize cardProperties, defaultProperties
+    Properties.define this, cardProperties
     @options(@defaultOptions).options instanceOptions
+    return
 
   options: (newOptions = {}) ->
     @instanceOptions = extend @instanceOptions, newOptions
@@ -55,7 +40,7 @@ class Card extends Emitter
 
   draw: ->
     unless @drawn
-      _isDrawn = yes
+      @drawn = yes
       @call @instanceOptions.onDraw
       @emit 'draw', this
     this
@@ -64,28 +49,28 @@ class Card extends Emitter
     if @drawn and not @played
       @call @instanceOptions.onPlay
       @emit 'play', this
-      _isPlayed = yes
+      @played = true
     this
 
   palm: ->
     if @drawn and not @palmed
       @call @instanceOptions.onPalm
       @emit 'palm', this
-      _isPalmed = yes
+      @palmed = yes
     this
 
   revive: ->
     if @drawn and @discarded
       @call @instanceOptions.onRevive
       @emit 'revive', this
-      _isDiscarded = no
+      @discarded = no
     this
 
   discard: ->
     if @drawn and not @discarded
       @call @instanceOptions.onDiscard
       @emit 'discard', this
-      _isDiscarded = yes
+      @discarded = yes
     this
 
 

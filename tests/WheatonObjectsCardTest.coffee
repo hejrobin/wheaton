@@ -2,18 +2,57 @@ cardClassPath = '../src/vendor/wheaton/objects/card'
 
 jest.dontMock cardClassPath
 
-describe 'Wheaton/Card', ->
+describe 'Wheaton/Objects/Card', ->
 
   card = undefined
 
   beforeEach ->
     Card = require cardClassPath
-    card = new Card 'jestTestCard',
-      onDraw: do jest.genMockFunction
-      onPlay: do jest.genMockFunction
-      onPalm: do jest.genMockFunction
-      onRevive: do jest.genMockFunction
-      onDiscard: do jest.genMockFunction
+    card = new Card
+      guid: 'pkmn_pikachu'
+      name: 'Pikachu'
+      instanceOptions:
+        onDraw: do jest.genMockFunction
+        onPlay: do jest.genMockFunction
+        onPalm: do jest.genMockFunction
+        onRevive: do jest.genMockFunction
+        onDiscard: do jest.genMockFunction
+
+  it 'has a guid property', ->
+    expect card.guid
+      .toBeDefined()
+
+  it 'cannot change guid', ->
+    initialGuid = card.guid
+    card.guid = 'l33t_hax'
+
+    expect initialGuid
+      .not.toBe 'l33t_hax'
+
+  it 'has a name property', ->
+    expect card.name
+      .toBeDefined()
+
+  it 'cannot change name', ->
+    initialName = card.name
+    card.name = 'Magikarp'
+
+    expect initialName
+      .not.toBe 'Magikarp'
+
+  it 'updates card property if defined validation passes', ->
+    initialDrawnState = card.drawn
+    card.drawn = true
+
+    expect initialDrawnState
+      .not.toBe card.drawn
+
+  it 'cannot update card property when validation fails', ->
+    initialDrawnState = card.drawn
+    card.drawn = 'Snorlax'
+
+    expect initialDrawnState
+      .not.toBe 'Snorlax'
 
   it 'calls onDraw function when drawn', ->
     card.draw()
@@ -69,13 +108,3 @@ describe 'Wheaton/Card', ->
 
     expect card.instanceOptions.onDiscard
       .toBeCalled()
-
-  it 'can be serialized', ->
-    expectedResult = JSON.stringify
-      isDrawn: no
-      isPlayed: no
-      isPalmed: no
-      isDiscarded: no
-
-    expect expectedResult
-      .toEqual card.serialized
