@@ -4,7 +4,7 @@ Wheaton = (function() {
   function Wheaton() {}
 
   Wheaton["import"] = function(wheatonPackage) {
-    return require("./" + wheatonPackage);
+    return require("./" + (wheatonPackage.toLowerCase()));
   };
 
   return Wheaton;
