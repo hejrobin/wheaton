@@ -1,5 +1,5 @@
-Emitter                   = require './event/emitter'
-utils                     = require './utils'
+Emitter                   = require '../event/emitter'
+utils                     = require '../utils'
 {extend, mutable}         = utils
 {serialize}               = utils
 

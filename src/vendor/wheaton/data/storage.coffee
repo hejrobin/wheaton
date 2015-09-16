@@ -13,21 +13,34 @@ class Storage
     @replace dataStore
     return
 
-  get 'store', ->
+  get 'data', ->
     _dataStore
 
-  set 'store', (newStore = {}) ->
+  set 'data', (newStore = {}) ->
     _dataStore = newStore
 
-  get 'length', ->
-    Object.keys(@store).length
+  get 'size', ->
+    Object.keys(@data).length
 
   get 'keys', ->
-    Array.prototype.slice.apply Object.keys @store
+    Array.prototype.slice.apply Object.keys @data
+
+  get 'shuffledKeys', ->
+    shuffledKeys = @keys
+    currentIndex = @size
+    randomIndex = undefined
+    tmp = undefined
+    while 0 isnt currentIndex
+      randomIndex = @randomKey
+      currentIndex -= 1
+      tmp = shuffledKeys[currentIndex]
+      shuffledKeys[currentIndex] = shuffledKeys[randomIndex]
+      shuffledKeys[randomIndex] = tmp
+    shuffledKeys
 
   get 'values', ->
     dataStoreValues = Object.keys(_dataStore).map (key) =>
-      @store[key]
+      @data[key]
     Array.prototype.slice.apply dataStoreValues
 
   get 'serialized', ->
@@ -37,52 +50,84 @@ class Storage
     do @parameterize
 
   get 'randomKey', ->
-    @randomKeyFrom @store
-
-  get 'random', ->
-    @store[@randomKey]
-
-  randomKeyFrom: (object) ->
-    keys = Object.keys object
+    keys = @keys
     rndm = do Math.random
     keys[keys.length * rndm << 0]
 
-  has: (key) ->
-    key of @store
+  get 'firstKey', ->
+    @keys[0]
+
+  get 'lastKey', ->
+    @keys[@size - 1]
+
+  get 'random', ->
+    @data[@randomKey]
+
+  get 'first', ->
+    @data[@firstKey]
+
+  get 'last', ->
+    @data[@lastKey]
+
+  has: (keys...) ->
+    keys.map (key) =>
+      @keys.indexOf key
+    .indexOf(-1) is -1
+
+  includes: (mixedValues...) ->
+    mixedValues.map (mixedValue) =>
+      @values.indexOf mixedValue
+    .indexOf(-1) is -1
 
   get: (key) ->
-    @store[key] if @has key
+    if @has key then @data[key] else null
 
   set: (key, data) ->
-    @store[key] = data
+    @data[key] = data
     this
 
   is: (key, data) ->
     if @has key
       item = @get key
-      item is data
+      return item is data
     false
 
+  grab: (key) ->
+    data = @get key
+    @remove key
+    data
+
   remove: (key) ->
-    delete @store[key] if @has key
+    delete @data[key] if @has key
+    this
 
   replace: (dataStore = {}) ->
-    @store = dataStore
+    @data = dataStore
+    this
 
-  merge: (newStorage = {}) ->
-    if newStorage.store?
-      newCrate = newStorage.store
-    @replace extend @store, newStorage
+  merge: (dataStore = {}) ->
+    if dataStore instanceof Storage
+      dataStore = dataStore.data
+    @replace extend @data, dataStore
+    this
+
+  shuffle: ->
+    keys = @shuffledKeys
+    _store = {}
+    for key in keys
+      _store[key] = @data[key]
+    @replace _store
     this
 
   destroy: ->
-    @store = {}
+    @data = {}
+    this
 
   serialize: =>
-    serialize @store
+    serialize @data
 
   parameterize: =>
-    parameterize @store
+    parameterize @data
 
 
 module.exports = Storage

@@ -1,7 +1,7 @@
 {
   "name": "wheaton",
   "description": "Wheaton is a small library that provides functionality to create social card games.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "licence": "MIT",
   "author": {
     "name": "Robin Grass",
