@@ -100,6 +100,10 @@ Card = (function(superClass) {
   Card.prototype.draw = function() {
     if (!this.drawn) {
       this.drawn = true;
+      this.quantity--;
+      if (this.quantity < 0) {
+        this.quantity = 0;
+      }
       this.call(this.instanceOptions.onDraw);
       this.emit('draw', this);
     }
@@ -135,6 +139,7 @@ Card = (function(superClass) {
 
   Card.prototype.discard = function() {
     if (this.drawn && !this.discarded) {
+      this.quantity = 0;
       this.call(this.instanceOptions.onDiscard);
       this.emit('discard', this);
       this.discarded = true;

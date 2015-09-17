@@ -48,6 +48,8 @@ class Card extends Emitter
   draw: ->
     unless @drawn
       @drawn = yes
+      @quantity--
+      @quantity = 0 if @quantity < 0
       @call @instanceOptions.onDraw
       @emit 'draw', this
     this
@@ -75,6 +77,7 @@ class Card extends Emitter
 
   discard: ->
     if @drawn and not @discarded
+      @quantity = 0
       @call @instanceOptions.onDiscard
       @emit 'discard', this
       @discarded = yes

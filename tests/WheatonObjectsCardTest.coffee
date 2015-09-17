@@ -62,6 +62,14 @@ describe 'Wheaton/Objects/Card', ->
     expect card.instanceOptions.onDraw
       .toBeCalled()
 
+  it 'decreases in quantity when drawn', ->
+    initialQuantity = card.quantity
+    card.draw()
+    quantityAfterDraw = card.quantity
+
+    expect initialQuantity
+      .toBeGreaterThan quantityAfterDraw
+
   it 'cannot be played if not drawn', ->
     card.play()
 
