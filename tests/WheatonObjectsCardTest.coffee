@@ -11,6 +11,8 @@ describe 'Wheaton/Objects/Card', ->
     card = new Card
       guid: 'pkmn_pikachu'
       name: 'Pikachu'
+      deckLimit: 5
+      description: 'Foo'
       instanceOptions:
         onDraw: do jest.genMockFunction
         onPlay: do jest.genMockFunction
@@ -41,11 +43,11 @@ describe 'Wheaton/Objects/Card', ->
       .not.toBe 'Magikarp'
 
   it 'updates card property if defined validation passes', ->
-    initialDrawnState = card.drawn
-    card.drawn = true
+    initialCardDescription = card.description
+    card.description = 'Bar'
 
-    expect initialDrawnState
-      .not.toBe card.drawn
+    expect initialCardDescription
+      .not.toBe card.description
 
   it 'cannot update card property when validation fails', ->
     initialDrawnState = card.drawn

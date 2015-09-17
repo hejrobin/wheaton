@@ -5,12 +5,17 @@ Properties                = require './properties'
 class Card extends Emitter
 
   defaultProperties =
-    guid: readonly: yes, validates: (property) -> typeof property is 'string'
-    name: readonly: yes, validates: (property) -> typeof property is 'string'
-    drawn: default: no, validates: (property) -> typeof property is 'boolean'
-    played: default: no, validates: (property) -> typeof property is 'boolean'
-    palmed: default: no, validates: (property) -> typeof property is 'boolean'
-    discarded: default: no, validates: (property) -> typeof property is 'boolean'
+    guid:         readonly: yes,  validates: Properties.PropTypes.string
+    name:         readonly: yes,  validates: Properties.PropTypes.string
+    drawn:        default: no,    validates: Properties.PropTypes.bool
+    played:       default: no,    validates: Properties.PropTypes.bool
+    palmed:       default: no,    validates: Properties.PropTypes.bool
+    discarded:    default: no,    validates: Properties.PropTypes.bool
+    deckLimit:    default: 1,     validates: Properties.PropTypes.number
+    quantity:     default: 1,     validates: Properties.PropTypes.number
+    description:  validates: Properties.PropTypes.string
+
+  instanceProperties: {}
 
   defaultOptions:
     onDraw: -> return
@@ -22,9 +27,11 @@ class Card extends Emitter
   instanceOptions: {}
 
   constructor: (cardProperties = {}) ->
-    instanceOptions = cardProperties.instanceOptions ? {}
-    delete cardProperties.instanceOptions
-    cardProperties = Properties.normalize cardProperties, defaultProperties
+    instanceOptions = {}
+    if cardProperties.hasOwnProperty 'instanceOptions'
+      instanceOptions = cardProperties.instanceOptions
+      delete cardProperties.instanceOptions
+    cardProperties = Properties.normalize defaultProperties, cardProperties
     Properties.define this, cardProperties
     @options(@defaultOptions).options instanceOptions
     return
