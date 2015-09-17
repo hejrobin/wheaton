@@ -1,49 +1,82 @@
-var Properties, mutable;
+var Properties, extend, mutable, ref,
+  hasProp = {}.hasOwnProperty;
 
-mutable = require('../utils').mutable;
+ref = require('../utils'), mutable = ref.mutable, extend = ref.extend;
 
 Properties = (function() {
-  var _properties;
+  var _defineMutators;
 
   function Properties() {}
 
-  _properties = {};
-
   Properties.normalize = function(propertyDefaults, propertyDescriptions) {
-    var propertyName, propertyValue;
+    var normalizedProperties, propertyName, propertyValue;
+    normalizedProperties = extend({}, propertyDefaults);
     for (propertyName in propertyDefaults) {
       propertyValue = propertyDefaults[propertyName];
       if (propertyDescriptions.hasOwnProperty(propertyName)) {
-        propertyDescriptions[propertyName]["default"] = propertyValue;
+        normalizedProperties[propertyName] = {
+          validates: Properties.PropTypes.any,
+          "default": propertyDescriptions[propertyName]
+        };
       }
     }
-    return propertyDescriptions;
+    return normalizedProperties;
+  };
+
+  _defineMutators = function(targetObject, propertyName, propertyDescription) {
+    var get, readonly, ref1, set;
+    ref1 = mutable(targetObject), get = ref1.get, set = ref1.set;
+    readonly = propertyDescription.hasOwnProperty('readonly');
+    get(propertyName, function() {
+      var propertyDefault, propertyValue;
+      if ((targetObject.instanceProperties != null) && targetObject.instanceProperties.hasOwnProperty(propertyName)) {
+        propertyValue = targetObject.instanceProperties[propertyName].value;
+        propertyDefault = targetObject.instanceProperties[propertyName]["default"];
+        return propertyValue != null ? propertyValue : propertyDefault;
+      }
+    });
+    return set(propertyName, function(propertyValue) {
+      if (readonly) {
+        return;
+      }
+      if ((propertyDescription.validates != null) && typeof propertyDescription.validates === 'function') {
+        targetObject.instanceProperties[propertyName].value = propertyValue;
+      }
+    });
   };
 
   Properties.define = function(targetObject, propertyDescriptions) {
-    var canDefineSetter, get, propertyDescription, propertyName, ref, ref1, set;
-    ref = mutable(targetObject), get = ref.get, set = ref.set;
-    for (propertyName in propertyDescriptions) {
-      propertyDescription = propertyDescriptions[propertyName];
-      get(propertyName, function() {
-        var ref1;
-        if (_properties[propertyName] != null) {
-          return _properties[propertyName];
-        }
-        return (ref1 = propertyDescription["default"]) != null ? ref1 : null;
-      });
-      if (propertyDescription.readonly == null) {
-        canDefineSetter = true;
-        if ((propertyDescription.validates != null) && typeof propertyDescription.validates === 'function') {
-          canDefineSetter = propertyDescription.validates.apply(targetObject, [(ref1 = propertyDescription["default"]) != null ? ref1 : null]);
-        }
-        if (canDefineSetter) {
-          set(propertyName, function(propertyValue) {
-            return _properties[propertyName] = propertyValue;
-          });
-        }
-        return;
-      }
+    var propertyDescription, propertyName, ref1;
+    targetObject.instanceProperties = propertyDescriptions;
+    ref1 = targetObject.instanceProperties;
+    for (propertyName in ref1) {
+      if (!hasProp.call(ref1, propertyName)) continue;
+      propertyDescription = ref1[propertyName];
+      _defineMutators(targetObject, propertyName, propertyDescription);
+    }
+  };
+
+  Properties.PropTypes = {
+    'any': function(property) {
+      return true;
+    },
+    'bool': function(property) {
+      return typeof property === 'boolean';
+    },
+    'array': function(property) {
+      return typeof property === 'array';
+    },
+    'string': function(property) {
+      return typeof property === 'string';
+    },
+    'number': function(property) {
+      return typeof property === 'number';
+    },
+    'object': function(property) {
+      return typeof property === 'object';
+    },
+    'number': function(property) {
+      return typeof property === 'number';
     }
   };
 

@@ -17,41 +17,42 @@ Card = (function(superClass) {
   defaultProperties = {
     guid: {
       readonly: true,
-      validates: function(property) {
-        return typeof property === 'string';
-      }
+      validates: Properties.PropTypes.string
     },
     name: {
       readonly: true,
-      validates: function(property) {
-        return typeof property === 'string';
-      }
+      validates: Properties.PropTypes.string
     },
     drawn: {
       "default": false,
-      validates: function(property) {
-        return typeof property === 'boolean';
-      }
+      validates: Properties.PropTypes.bool
     },
     played: {
       "default": false,
-      validates: function(property) {
-        return typeof property === 'boolean';
-      }
+      validates: Properties.PropTypes.bool
     },
     palmed: {
       "default": false,
-      validates: function(property) {
-        return typeof property === 'boolean';
-      }
+      validates: Properties.PropTypes.bool
     },
     discarded: {
       "default": false,
-      validates: function(property) {
-        return typeof property === 'boolean';
-      }
+      validates: Properties.PropTypes.bool
+    },
+    deckLimit: {
+      "default": 1,
+      validates: Properties.PropTypes.number
+    },
+    quantity: {
+      "default": 1,
+      validates: Properties.PropTypes.number
+    },
+    description: {
+      validates: Properties.PropTypes.string
     }
   };
+
+  Card.prototype.instanceProperties = {};
 
   Card.prototype.defaultOptions = {
     onDraw: function() {},
@@ -64,13 +65,16 @@ Card = (function(superClass) {
   Card.prototype.instanceOptions = {};
 
   function Card(cardProperties) {
-    var instanceOptions, ref;
+    var instanceOptions;
     if (cardProperties == null) {
       cardProperties = {};
     }
-    instanceOptions = (ref = cardProperties.instanceOptions) != null ? ref : {};
-    delete cardProperties.instanceOptions;
-    cardProperties = Properties.normalize(cardProperties, defaultProperties);
+    instanceOptions = {};
+    if (cardProperties.hasOwnProperty('instanceOptions')) {
+      instanceOptions = cardProperties.instanceOptions;
+      delete cardProperties.instanceOptions;
+    }
+    cardProperties = Properties.normalize(defaultProperties, cardProperties);
     Properties.define(this, cardProperties);
     this.options(this.defaultOptions).options(instanceOptions);
     return;
