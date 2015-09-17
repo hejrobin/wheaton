@@ -1,9 +1,10 @@
+Emitter                   = require '../event/emitter'
 utils                     = require '../utils'
 {extend, mutable}         = utils
 {parameterize}            = utils
 {serialize}               = utils
 
-class Storage
+class Storage extends Emitter
 
   {get, set} = mutable @::
 

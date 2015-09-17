@@ -1,7 +1,6 @@
 var Card, Emitter, Properties, extend,
   extend1 = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-  hasProp = {}.hasOwnProperty,
-  slice = [].slice;
+  hasProp = {}.hasOwnProperty;
 
 Emitter = require('../event/emitter');
 
@@ -54,13 +53,7 @@ Card = (function(superClass) {
 
   Card.prototype.instanceProperties = {};
 
-  Card.prototype.defaultOptions = {
-    onDraw: function() {},
-    onPlay: function() {},
-    onPalm: function() {},
-    onRevive: function() {},
-    onDiscard: function() {}
-  };
+  Card.prototype.defaultOptions = {};
 
   Card.prototype.instanceOptions = {};
 
@@ -88,61 +81,65 @@ Card = (function(superClass) {
     return this;
   };
 
-  Card.prototype.call = function() {
-    var callable, callableArguments;
-    callable = arguments[0], callableArguments = 2 <= arguments.length ? slice.call(arguments, 1) : [];
-    if (typeof callable === 'function') {
-      callable.apply(this, callableArguments);
+  Card.prototype.add = function() {
+    if (!this.discarded) {
+      this.emit('add', this);
+      this.quantity++;
+      if (this.quantity > this.deckLimit) {
+        this.quantity = this.deckLimit;
+      } else {
+        this.emit('added', this);
+      }
     }
     return this;
   };
 
   Card.prototype.draw = function() {
     if (!this.drawn) {
+      this.emit('draw', this);
       this.drawn = true;
       this.quantity--;
       if (this.quantity < 0) {
         this.quantity = 0;
       }
-      this.call(this.instanceOptions.onDraw);
-      this.emit('draw', this);
+      this.emit('drawn', this);
     }
     return this;
   };
 
   Card.prototype.play = function() {
     if (this.drawn && !this.played) {
-      this.call(this.instanceOptions.onPlay);
       this.emit('play', this);
       this.played = true;
+      this.emit('played', this);
     }
     return this;
   };
 
   Card.prototype.palm = function() {
     if (this.drawn && !this.palmed) {
-      this.call(this.instanceOptions.onPalm);
       this.emit('palm', this);
       this.palmed = true;
+      this.emit('palmed', this);
     }
     return this;
   };
 
   Card.prototype.revive = function() {
     if (this.drawn && this.discarded) {
-      this.call(this.instanceOptions.onRevive);
       this.emit('revive', this);
       this.discarded = false;
+      this.emit('revived', this);
     }
     return this;
   };
 
   Card.prototype.discard = function() {
     if (this.drawn && !this.discarded) {
-      this.quantity = 0;
-      this.call(this.instanceOptions.onDiscard);
       this.emit('discard', this);
+      this.quantity = 0;
       this.discarded = true;
+      this.emit('discarded', this);
     }
     return this;
   };

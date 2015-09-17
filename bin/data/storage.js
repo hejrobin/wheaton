@@ -1,6 +1,10 @@
-var Storage, extend, mutable, parameterize, serialize, utils,
+var Emitter, Storage, extend, mutable, parameterize, serialize, utils,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+  extend1 = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty,
   slice = [].slice;
+
+Emitter = require('../event/emitter');
 
 utils = require('../utils');
 
@@ -10,8 +14,10 @@ parameterize = utils.parameterize;
 
 serialize = utils.serialize;
 
-Storage = (function() {
+Storage = (function(superClass) {
   var _dataStore, get, ref, set;
+
+  extend1(Storage, superClass);
 
   ref = mutable(Storage.prototype), get = ref.get, set = ref.set;
 
@@ -127,6 +133,18 @@ Storage = (function() {
     })(this)).indexOf(-1) === -1;
   };
 
+  Storage.prototype.keyOf = function(data) {
+    var key, ref1, value;
+    ref1 = this.data;
+    for (key in ref1) {
+      if (!hasProp.call(ref1, key)) continue;
+      value = ref1[key];
+      if (data === value) {
+        return key;
+      }
+    }
+  };
+
   Storage.prototype.get = function(key) {
     if (this.has(key)) {
       return this.data[key];
@@ -217,6 +235,6 @@ Storage = (function() {
 
   return Storage;
 
-})();
+})(Emitter);
 
 module.exports = Storage;

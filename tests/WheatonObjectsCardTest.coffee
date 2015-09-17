@@ -8,13 +8,14 @@ describe 'Wheaton/Objects/Card', ->
 
   beforeEach ->
     Card = require cardClassPath
-    Card::emit = do jest.genMockFunction
 
     card = new Card
       guid: 'pkmn_pikachu'
       name: 'Pikachu'
       deckLimit: 5
       description: 'Foo'
+
+    card.emit = do jest.genMockFunction
 
     card
       .on 'add', -> return

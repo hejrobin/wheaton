@@ -11,20 +11,16 @@ Deck = (function(superClass) {
     return Deck.__super__.constructor.apply(this, arguments);
   }
 
-  Deck.prototype.draw = function(shuffleAfterDraw) {
+  Deck.prototype.draw = function() {
     var cardObject, cardObjectKey;
-    if (shuffleAfterDraw == null) {
-      shuffleAfterDraw = false;
-    }
+    this.emit('draw', this);
     cardObjectKey = this.lastKey;
     cardObject = this.get(cardObjectKey);
     cardObject.draw();
     if (cardObject.quantity <= 0) {
       this.remove(cardObjectKey);
     }
-    if (shuffleAfterDraw) {
-      this.shuffle();
-    }
+    this.emit('drawn');
     return cardObject;
   };
 
