@@ -83,6 +83,10 @@ describe 'Wheaton/Data/Storage', ->
     expect includesRandomValue
       .toBe true
 
+  it 'returns key from input value', ->
+    expect(storage.keyOf 'Hello World')
+      .toBe 'en'
+
   it 'returns first value from data store with Storage.first', ->
     helloWorldDictKeys = Object.keys helloWorldDict
     firstKeyInHelloWorldDict = helloWorldDictKeys[0]

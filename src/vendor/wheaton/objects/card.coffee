@@ -17,12 +17,7 @@ class Card extends Emitter
 
   instanceProperties: {}
 
-  defaultOptions:
-    onDraw: -> return
-    onPlay: -> return
-    onPalm: -> return
-    onRevive: -> return
-    onDiscard: -> return
+  defaultOptions: {}
 
   instanceOptions: {}
 
@@ -40,47 +35,52 @@ class Card extends Emitter
     @instanceOptions = extend @instanceOptions, newOptions
     this
 
-  call: (callable, callableArguments...) ->
-    if typeof callable is 'function'
-      callable.apply this, callableArguments
+  add: ->
+    unless @discarded
+      @emit 'add', this
+      @quantity++
+      if @quantity > @deckLimit
+        @quantity = @deckLimit
+      else
+        @emit 'added', this
     this
 
   draw: ->
     unless @drawn
+      @emit 'draw', this
       @drawn = yes
       @quantity--
       @quantity = 0 if @quantity < 0
-      @call @instanceOptions.onDraw
-      @emit 'draw', this
+      @emit 'drawn', this
     this
 
   play: ->
     if @drawn and not @played
-      @call @instanceOptions.onPlay
       @emit 'play', this
       @played = true
+      @emit 'played', this
     this
 
   palm: ->
     if @drawn and not @palmed
-      @call @instanceOptions.onPalm
       @emit 'palm', this
       @palmed = yes
+      @emit 'palmed', this
     this
 
   revive: ->
     if @drawn and @discarded
-      @call @instanceOptions.onRevive
       @emit 'revive', this
       @discarded = no
+      @emit 'revived', this
     this
 
   discard: ->
     if @drawn and not @discarded
-      @quantity = 0
-      @call @instanceOptions.onDiscard
       @emit 'discard', this
+      @quantity = 0
       @discarded = yes
+      @emit 'discarded', this
     this
 
 

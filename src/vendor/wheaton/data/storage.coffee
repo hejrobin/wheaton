@@ -79,6 +79,10 @@ class Storage
       @values.indexOf mixedValue
     .indexOf(-1) is -1
 
+  keyOf: (data) ->
+    for own key, value of @data
+      return key if data is value
+
   get: (key) ->
     if @has key then @data[key] else null
 

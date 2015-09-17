@@ -8,17 +8,21 @@ describe 'Wheaton/Objects/Card', ->
 
   beforeEach ->
     Card = require cardClassPath
+    Card::emit = do jest.genMockFunction
+
     card = new Card
       guid: 'pkmn_pikachu'
       name: 'Pikachu'
       deckLimit: 5
       description: 'Foo'
-      instanceOptions:
-        onDraw: do jest.genMockFunction
-        onPlay: do jest.genMockFunction
-        onPalm: do jest.genMockFunction
-        onRevive: do jest.genMockFunction
-        onDiscard: do jest.genMockFunction
+
+    card
+      .on 'add', -> return
+      .on 'draw', -> return
+      .on 'play', -> return
+      .on 'palm', -> return
+      .on 'revive', -> return
+      .on 'discard', -> return
 
   it 'has a guid property', ->
     expect card.guid
@@ -56,11 +60,11 @@ describe 'Wheaton/Objects/Card', ->
     expect initialDrawnState
       .not.toBe 'Snorlax'
 
-  it 'calls onDraw function when drawn', ->
+  it 'emits "drawn" function when drawn', ->
     card.draw()
 
-    expect card.instanceOptions.onDraw
-      .toBeCalled()
+    expect card.emit
+      .toBeCalledWith 'draw', card
 
   it 'decreases in quantity when drawn', ->
     initialQuantity = card.quantity
@@ -73,48 +77,49 @@ describe 'Wheaton/Objects/Card', ->
   it 'cannot be played if not drawn', ->
     card.play()
 
-    expect card.instanceOptions.onPlay
+    expect card.emit
       .not.toBeCalled()
 
-  it 'calls onPlay when played after it is drawn', ->
+  it 'emits "play" when played after it is drawn', ->
     card.draw().play()
 
-    expect card.instanceOptions.onPlay
-      .toBeCalled()
+    expect card.emit
+      .toBeCalledWith 'play', card
 
   it 'cannot be palmed if not drawn', ->
     card.palm()
 
-    expect card.instanceOptions.onPalm
+    expect card.emit
       .not.toBeCalled()
 
-  it 'calls onPalm when palmed after it is drawn', ->
+  it 'emits "palm" when palmed after it is drawn', ->
     card.draw().palm()
 
-    expect card.instanceOptions.onPalm
-      .toBeCalled()
+    expect card.emit
+      .toBeCalledWith 'palm', card
 
   it 'cannot be revived if not discarded', ->
     card.revive()
 
-    expect(card.instanceOptions.onRevive).not.toBeCalled()
+    expect card.emit
+      .not.toBeCalled
 
-  it 'calls onRevive when revived after it is drawn', ->
+  it 'emits "revive" when revived after it is drawn', ->
     card.draw().discard().revive()
 
-    expect card.instanceOptions.onRevive
-      .toBeCalled()
+    expect card.emit
+      .toBeCalledWith 'revive', card
 
   it 'cannot be discarded if already discarded', ->
     card.draw().discard()
     card.options onDiscard: do jest.genMockFunction
     card.draw().discard()
 
-    expect card.instanceOptions.onDiscard
-      .not.toBeCalled()
+    expect card.emit
+      .not.toBeCalled
 
-  it 'calls onDiscard when discarded after it is drawn', ->
+  it 'emits "discard" when discarded after it is drawn', ->
     card.draw().discard()
 
-    expect card.instanceOptions.onDiscard
-      .toBeCalled()
+    expect card.emit
+      .toBeCalledWith 'discard', card
