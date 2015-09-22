@@ -1,29 +1,31 @@
-var Emitter, Storage, extend, mutable, parameterize, serialize, utils,
+var EventEmitter, Mutate, Randomize, Store, extend, mutatorsFor, parameterize, serialize,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   extend1 = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty,
   slice = [].slice;
 
-Emitter = require('../event/emitter');
+EventEmitter = require('./EventEmitter');
 
-utils = require('../utils');
+Randomize = require('./Randomize');
 
-extend = utils.extend, mutable = utils.mutable;
+Mutate = require('./Mutate');
 
-parameterize = utils.parameterize;
+extend = Mutate.extend, mutatorsFor = Mutate.mutatorsFor;
 
-serialize = utils.serialize;
+parameterize = Mutate.parameterize;
 
-Storage = (function(superClass) {
+serialize = Mutate.serialize;
+
+Store = (function(superClass) {
   var _dataStore, get, ref, set;
 
-  extend1(Storage, superClass);
+  extend1(Store, superClass);
 
-  ref = mutable(Storage.prototype), get = ref.get, set = ref.set;
+  ref = mutatorsFor(Store.prototype), get = ref.get, set = ref.set;
 
   _dataStore = {};
 
-  function Storage(dataStore) {
+  function Store(dataStore) {
     if (dataStore == null) {
       dataStore = {};
     }
@@ -87,10 +89,7 @@ Storage = (function(superClass) {
   });
 
   get('randomKey', function() {
-    var keys, rndm;
-    keys = this.keys;
-    rndm = Math.random();
-    return keys[keys.length * rndm << 0];
+    return Randomize.pick(this.keys);
   });
 
   get('firstKey', function() {
@@ -113,7 +112,7 @@ Storage = (function(superClass) {
     return this.data[this.lastKey];
   });
 
-  Storage.prototype.has = function() {
+  Store.prototype.has = function() {
     var keys;
     keys = 1 <= arguments.length ? slice.call(arguments, 0) : [];
     return keys.map((function(_this) {
@@ -123,7 +122,7 @@ Storage = (function(superClass) {
     })(this)).indexOf(-1) === -1;
   };
 
-  Storage.prototype.includes = function() {
+  Store.prototype.includes = function() {
     var mixedValues;
     mixedValues = 1 <= arguments.length ? slice.call(arguments, 0) : [];
     return mixedValues.map((function(_this) {
@@ -133,7 +132,7 @@ Storage = (function(superClass) {
     })(this)).indexOf(-1) === -1;
   };
 
-  Storage.prototype.keyOf = function(data) {
+  Store.prototype.keyOf = function(data) {
     var key, ref1, value;
     ref1 = this.data;
     for (key in ref1) {
@@ -145,7 +144,7 @@ Storage = (function(superClass) {
     }
   };
 
-  Storage.prototype.get = function(key) {
+  Store.prototype.get = function(key) {
     if (this.has(key)) {
       return this.data[key];
     } else {
@@ -153,12 +152,12 @@ Storage = (function(superClass) {
     }
   };
 
-  Storage.prototype.set = function(key, data) {
+  Store.prototype.set = function(key, data) {
     this.data[key] = data;
     return this;
   };
 
-  Storage.prototype.is = function(key, data) {
+  Store.prototype.is = function(key, data) {
     var item;
     if (this.has(key)) {
       item = this.get(key);
@@ -167,21 +166,21 @@ Storage = (function(superClass) {
     return false;
   };
 
-  Storage.prototype.grab = function(key) {
+  Store.prototype.grab = function(key) {
     var data;
     data = this.get(key);
     this.remove(key);
     return data;
   };
 
-  Storage.prototype.remove = function(key) {
+  Store.prototype.remove = function(key) {
     if (this.has(key)) {
       delete this.data[key];
     }
     return this;
   };
 
-  Storage.prototype.replace = function(dataStore) {
+  Store.prototype.replace = function(dataStore) {
     if (dataStore == null) {
       dataStore = {};
     }
@@ -189,7 +188,7 @@ Storage = (function(superClass) {
     return this;
   };
 
-  Storage.prototype.merge = function(dataStore) {
+  Store.prototype.merge = function(dataStore) {
     if (dataStore == null) {
       dataStore = {};
     }
@@ -200,7 +199,7 @@ Storage = (function(superClass) {
     return this;
   };
 
-  Storage.prototype.shuffle = function() {
+  Store.prototype.shuffle = function() {
     var _store, i, key, keys, len;
     keys = this.shuffledKeys;
     _store = {};
@@ -212,29 +211,29 @@ Storage = (function(superClass) {
     return this;
   };
 
-  Storage.prototype.pop = function() {
+  Store.prototype.pop = function() {
     return this.grab(this.lastKey);
   };
 
-  Storage.prototype.shift = function() {
+  Store.prototype.shift = function() {
     return this.grab(this.firstKey);
   };
 
-  Storage.prototype.destroy = function() {
+  Store.prototype.destroy = function() {
     this.data = {};
     return this;
   };
 
-  Storage.prototype.serialize = function() {
+  Store.prototype.serialize = function() {
     return serialize(this.data);
   };
 
-  Storage.prototype.parameterize = function() {
+  Store.prototype.parameterize = function() {
     return parameterize(this.data);
   };
 
-  return Storage;
+  return Store;
 
-})(Emitter);
+})(EventEmitter);
 
-module.exports = Storage;
+module.exports = Store;

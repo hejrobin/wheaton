@@ -1,21 +1,21 @@
-var Emitter,
+var EventEmitter,
   slice = [].slice;
 
-Emitter = (function() {
-  function Emitter() {}
+EventEmitter = (function() {
+  function EventEmitter() {}
 
-  Emitter.prototype.defaultMaxListeners = 10;
+  EventEmitter.prototype.defaultMaxListeners = 10;
 
-  Emitter.prototype.maxListeners = null;
+  EventEmitter.prototype.maxListeners = null;
 
-  Emitter.prototype.eventListeners = {};
+  EventEmitter.prototype.eventListeners = {};
 
-  Emitter.prototype.setMaxListeners = function(maxListeners) {
+  EventEmitter.prototype.setMaxListeners = function(maxListeners) {
     this.maxListeners = maxListeners;
     return this;
   };
 
-  Emitter.prototype.getMaxListeners = function() {
+  EventEmitter.prototype.getMaxListeners = function() {
     if (typeof this.maxListeners === 'number') {
       return this.maxListeners;
     } else {
@@ -23,11 +23,11 @@ Emitter = (function() {
     }
   };
 
-  Emitter.prototype.hasListeners = function(eventType) {
+  EventEmitter.prototype.hasListeners = function(eventType) {
     return this.eventListeners.hasOwnProperty(eventType);
   };
 
-  Emitter.prototype.listeners = function(eventType) {
+  EventEmitter.prototype.listeners = function(eventType) {
     if (this.hasListeners(eventType)) {
       return this.eventListeners[eventType];
     } else {
@@ -35,11 +35,11 @@ Emitter = (function() {
     }
   };
 
-  Emitter.prototype.listenerCount = function(eventType) {
+  EventEmitter.prototype.listenerCount = function(eventType) {
     return this.listeners(eventType).length;
   };
 
-  Emitter.prototype.hasListener = function(eventType, eventCallback) {
+  EventEmitter.prototype.hasListener = function(eventType, eventCallback) {
     if (this.hasListeners(eventType)) {
       if (this.eventListeners[eventType].indexOf(eventCallback) > -1) {
         return true;
@@ -48,7 +48,7 @@ Emitter = (function() {
     return false;
   };
 
-  Emitter.prototype.addListener = function(eventType, eventCallback) {
+  EventEmitter.prototype.addListener = function(eventType, eventCallback) {
     if (!this.hasListeners(eventType)) {
       this.eventListeners[eventType] = [];
     }
@@ -60,7 +60,7 @@ Emitter = (function() {
     return this;
   };
 
-  Emitter.prototype.addOnceListener = function(eventType, eventCallback) {
+  EventEmitter.prototype.addOnceListener = function(eventType, eventCallback) {
     var onceListener;
     onceListener = (function(_this) {
       return function() {
@@ -72,7 +72,7 @@ Emitter = (function() {
     return this;
   };
 
-  Emitter.prototype.removeListener = function(eventType, eventCallback) {
+  EventEmitter.prototype.removeListener = function(eventType, eventCallback) {
     var listenerCallbackIndex;
     if (this.hasListeners(eventType)) {
       listenerCallbackIndex = this.listeners(eventType).indexOf(eventCallback);
@@ -83,7 +83,7 @@ Emitter = (function() {
     return this;
   };
 
-  Emitter.prototype.removeAllListeners = function() {
+  EventEmitter.prototype.removeAllListeners = function() {
     var eventType, eventTypes, i, len;
     eventTypes = 1 <= arguments.length ? slice.call(arguments, 0) : [];
     if (eventTypes.length === 0) {
@@ -99,7 +99,7 @@ Emitter = (function() {
     return this;
   };
 
-  Emitter.prototype.emit = function() {
+  EventEmitter.prototype.emit = function() {
     var callbackArguments, eventCallback, eventCallbacks, eventType, ref, results;
     eventType = arguments[0], callbackArguments = 2 <= arguments.length ? slice.call(arguments, 1) : [];
     if (this.eventListeners.hasOwnProperty(eventType)) {
@@ -121,20 +121,20 @@ Emitter = (function() {
     }
   };
 
-  Emitter.prototype.on = function() {
+  EventEmitter.prototype.on = function() {
     return this.addListener.apply(this, arguments);
   };
 
-  Emitter.prototype.once = function() {
+  EventEmitter.prototype.once = function() {
     return this.addOnceListener.apply(this, arguments);
   };
 
-  Emitter.prototype.off = function() {
+  EventEmitter.prototype.off = function() {
     return this.removeListener.apply(this, arguments);
   };
 
-  return Emitter;
+  return EventEmitter;
 
 })();
 
-module.exports = Emitter;
+module.exports = EventEmitter;

@@ -1,4 +1,4 @@
-class Utils
+class Mutate
 
   @extend: (targetObject, mutableObjects...) ->
     for sourceObject in mutableObjects
@@ -20,29 +20,27 @@ class Utils
         segments.push "#{encodeURIComponent key}=#{encodeURIComponent data}"
     segments.join '&'
 
-  @mutable: (prototypable) ->
+  @mutatorsFor: (prototypable) =>
 
-    get: (propertyName, propertyCallback, propertyDescription = {}) ->
-      propertyDescription = Utils.extend
+    get: (propertyName, propertyCallback, propertyDescription = {}) =>
+      propertyDescription = @extend
         get: propertyCallback
         configurable: yes
         enumerable: yes,
         propertyDescription
-
       Object.defineProperty prototypable,
         propertyName
         propertyDescription
 
-    set: (propertyName, propertyCallback, propertyDescription = {}) ->
-      propertyDescription = Utils.extend
+    set: (propertyName, propertyCallback, propertyDescription = {}) =>
+      propertyDescription = @extend
         set: propertyCallback
         configurable: yes
         enumerable: yes,
         propertyDescription
-
       Object.defineProperty prototypable,
         propertyName
         propertyDescription
 
 
-module.exports = Utils
+module.exports = Mutate

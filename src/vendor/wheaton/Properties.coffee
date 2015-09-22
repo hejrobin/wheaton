@@ -1,6 +1,15 @@
-{mutable, extend}         = require '../utils'
+{extend, mutatorsFor}     = require './Mutate'
 
 class Properties
+
+  @PropTypes:
+    'any':    (property) -> yes
+    'bool':   (property) -> typeof property is 'boolean'
+    'array':  (property) -> Array.isArray property
+    'string': (property) -> typeof property is 'string'
+    'number': (property) -> typeof property is 'number'
+    'object': (property) -> typeof property is 'object' and Array.isArray(property) is false
+    'number': (property) -> typeof property is 'number'
 
   @normalize: (propertyDefaults, propertyDescriptions) =>
     normalizedProperties = extend {}, propertyDefaults
@@ -12,7 +21,7 @@ class Properties
     normalizedProperties
 
   _defineMutators = (targetObject, propertyName, propertyDescription) ->
-    {get, set} = mutable targetObject
+    {get, set} = mutatorsFor targetObject
     readonly = propertyDescription.hasOwnProperty 'readonly'
 
     get propertyName, ->
@@ -32,15 +41,6 @@ class Properties
     for own propertyName, propertyDescription of targetObject.instanceProperties
       _defineMutators targetObject, propertyName, propertyDescription
     return
-
-  @PropTypes:
-    'any':    (property) -> yes
-    'bool':   (property) -> typeof property is 'boolean'
-    'array':  (property) -> typeof property is 'array'
-    'string': (property) -> typeof property is 'string'
-    'number': (property) -> typeof property is 'number'
-    'object': (property) -> typeof property is 'object'
-    'number': (property) -> typeof property is 'number'
 
 
 module.exports = Properties

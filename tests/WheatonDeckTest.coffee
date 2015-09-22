@@ -1,5 +1,5 @@
-deckClassPath = '../src/vendor/wheaton/objects/deck'
-cardClassPath = '../src/vendor/wheaton/objects/card'
+deckClassPath = '../src/vendor/wheaton/Deck'
+cardClassPath = '../src/vendor/wheaton/Card'
 
 jest.dontMock deckClassPath
 jest.dontMock cardClassPath

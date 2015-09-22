@@ -1,12 +1,36 @@
-var Properties, extend, mutable, ref,
+var Properties, extend, mutatorsFor, ref,
   hasProp = {}.hasOwnProperty;
 
-ref = require('../utils'), mutable = ref.mutable, extend = ref.extend;
+ref = require('./Mutate'), extend = ref.extend, mutatorsFor = ref.mutatorsFor;
 
 Properties = (function() {
   var _defineMutators;
 
   function Properties() {}
+
+  Properties.PropTypes = {
+    'any': function(property) {
+      return true;
+    },
+    'bool': function(property) {
+      return typeof property === 'boolean';
+    },
+    'array': function(property) {
+      return Array.isArray(property);
+    },
+    'string': function(property) {
+      return typeof property === 'string';
+    },
+    'number': function(property) {
+      return typeof property === 'number';
+    },
+    'object': function(property) {
+      return typeof property === 'object' && Array.isArray(property) === false;
+    },
+    'number': function(property) {
+      return typeof property === 'number';
+    }
+  };
 
   Properties.normalize = function(propertyDefaults, propertyDescriptions) {
     var normalizedProperties, propertyName, propertyValue;
@@ -25,7 +49,7 @@ Properties = (function() {
 
   _defineMutators = function(targetObject, propertyName, propertyDescription) {
     var get, readonly, ref1, set;
-    ref1 = mutable(targetObject), get = ref1.get, set = ref1.set;
+    ref1 = mutatorsFor(targetObject), get = ref1.get, set = ref1.set;
     readonly = propertyDescription.hasOwnProperty('readonly');
     get(propertyName, function() {
       var propertyDefault, propertyValue;
@@ -53,30 +77,6 @@ Properties = (function() {
       if (!hasProp.call(ref1, propertyName)) continue;
       propertyDescription = ref1[propertyName];
       _defineMutators(targetObject, propertyName, propertyDescription);
-    }
-  };
-
-  Properties.PropTypes = {
-    'any': function(property) {
-      return true;
-    },
-    'bool': function(property) {
-      return typeof property === 'boolean';
-    },
-    'array': function(property) {
-      return typeof property === 'array';
-    },
-    'string': function(property) {
-      return typeof property === 'string';
-    },
-    'number': function(property) {
-      return typeof property === 'number';
-    },
-    'object': function(property) {
-      return typeof property === 'object';
-    },
-    'number': function(property) {
-      return typeof property === 'number';
     }
   };
 

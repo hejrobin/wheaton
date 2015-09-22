@@ -1,8 +1,8 @@
-eventEmitterClassPath = '../src/vendor/wheaton/event/emitter'
+eventEmitterClassPath = '../src/vendor/wheaton/EventEmitter'
 
 jest.dontMock eventEmitterClassPath
 
-describe 'Wheaton/Event/Emitter', ->
+describe 'EventEmitter', ->
 
   eventEmitter = undefined
 

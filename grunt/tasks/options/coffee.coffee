@@ -6,6 +6,6 @@ module.exports =
       expand: yes
       cwd: './src/vendor/wheaton'
       src: ['**/*.coffee']
-      dest: './bin'
+      dest: './dist'
       ext: '.js'
     ]

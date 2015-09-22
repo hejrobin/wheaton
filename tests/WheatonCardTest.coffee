@@ -1,22 +1,19 @@
-cardClassPath = '../src/vendor/wheaton/objects/card'
+cardClassPath = '../src/vendor/wheaton/Card'
 
 jest.dontMock cardClassPath
 
-describe 'Wheaton/Objects/Card', ->
+describe 'Card', ->
 
   card = undefined
 
   beforeEach ->
     Card = require cardClassPath
-
     card = new Card
       guid: 'pkmn_pikachu'
       name: 'Pikachu'
       deckLimit: 5
       description: 'Foo'
-
     card.emit = do jest.genMockFunction
-
     card
       .on 'add', -> return
       .on 'draw', -> return

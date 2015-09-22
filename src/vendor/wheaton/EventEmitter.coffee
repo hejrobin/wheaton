@@ -1,4 +1,4 @@
-class Emitter
+class EventEmitter
 
   defaultMaxListeners: 10
 
@@ -70,4 +70,4 @@ class Emitter
   off: -> @removeListener.apply this, arguments
 
 
-module.exports = Emitter
+module.exports = EventEmitter

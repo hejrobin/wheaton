@@ -1,12 +1,13 @@
-Emitter                   = require '../event/emitter'
-utils                     = require '../utils'
-{extend, mutable}         = utils
-{parameterize}            = utils
-{serialize}               = utils
+EventEmitter              = require './EventEmitter'
+Randomize                 = require './Randomize'
+Mutate                    = require './Mutate'
+{extend, mutatorsFor}     = Mutate
+{parameterize}            = Mutate
+{serialize}               = Mutate
 
-class Storage extends Emitter
+class Store extends EventEmitter
 
-  {get, set} = mutable @::
+  {get, set} = mutatorsFor @::
 
   _dataStore = {}
 
@@ -51,9 +52,7 @@ class Storage extends Emitter
     do @parameterize
 
   get 'randomKey', ->
-    keys = @keys
-    rndm = do Math.random
-    keys[keys.length * rndm << 0]
+    Randomize.pick @keys
 
   get 'firstKey', ->
     @keys[0]
@@ -141,4 +140,4 @@ class Storage extends Emitter
     parameterize @data
 
 
-module.exports = Storage
+module.exports = Store

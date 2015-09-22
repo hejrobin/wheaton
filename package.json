@@ -1,8 +1,8 @@
 {
   "name": "wheaton",
   "description": "Wheaton is a small library that provides functionality to create social card games.",
-  "version": "0.2.7",
-  "licence": "MIT",
+  "version": "0.5.0",
+  "license": "MIT",
   "author": {
     "name": "Robin Grass",
     "email": "hej@carbin.se",
@@ -23,8 +23,11 @@
   "scripts": {
     "test": "jest"
   },
-  "main": "./bin/wheaton.js",
-  "dependencies": {},
+  "main": "./dist/main.js",
+  "dependencies": {
+    "es5-shim":                 "~4.1.13",
+    "es6-shim":                 "~0.33.3"
+  },
   "devDependencies": {
     "matchdep":                 "~0.3.0",
     "coffee-script":            "~1.10.0",

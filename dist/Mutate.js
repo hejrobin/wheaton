@@ -1,10 +1,10 @@
-var Utils,
+var Mutate,
   slice = [].slice;
 
-Utils = (function() {
-  function Utils() {}
+Mutate = (function() {
+  function Mutate() {}
 
-  Utils.extend = function() {
+  Mutate.extend = function() {
     var i, key, len, mutableObjects, sourceObject, targetObject;
     targetObject = arguments[0], mutableObjects = 2 <= arguments.length ? slice.call(arguments, 1) : [];
     for (i = 0, len = mutableObjects.length; i < len; i++) {
@@ -18,11 +18,11 @@ Utils = (function() {
     return targetObject;
   };
 
-  Utils.serialize = function(sourceObject) {
+  Mutate.serialize = function(sourceObject) {
     return JSON.stringify(sourceObject);
   };
 
-  Utils.parameterize = function(sourceObject, prefix) {
+  Mutate.parameterize = function(sourceObject, prefix) {
     var data, key, segments;
     if (prefix == null) {
       prefix = null;
@@ -34,7 +34,7 @@ Utils = (function() {
         key = prefix + "[" + key + "]";
       }
       if (typeof data === 'object') {
-        segments.push(Utils.parameterize(data, key));
+        segments.push(Mutate.parameterize(data, key));
       } else {
         segments.push((encodeURIComponent(key)) + "=" + (encodeURIComponent(data)));
       }
@@ -42,13 +42,13 @@ Utils = (function() {
     return segments.join('&');
   };
 
-  Utils.mutable = function(prototypable) {
+  Mutate.mutatorsFor = function(prototypable) {
     return {
       get: function(propertyName, propertyCallback, propertyDescription) {
         if (propertyDescription == null) {
           propertyDescription = {};
         }
-        propertyDescription = Utils.extend({
+        propertyDescription = Mutate.extend({
           get: propertyCallback,
           configurable: true,
           enumerable: true
@@ -59,7 +59,7 @@ Utils = (function() {
         if (propertyDescription == null) {
           propertyDescription = {};
         }
-        propertyDescription = Utils.extend({
+        propertyDescription = Mutate.extend({
           set: propertyCallback,
           configurable: true,
           enumerable: true
@@ -69,8 +69,8 @@ Utils = (function() {
     };
   };
 
-  return Utils;
+  return Mutate;
 
 })();
 
-module.exports = Utils;
+module.exports = Mutate;

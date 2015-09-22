@@ -1,12 +1,12 @@
-var Card, Emitter, Properties, extend,
+var Card, EventEmitter, Properties, extend,
   extend1 = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
 
-Emitter = require('../event/emitter');
+EventEmitter = require('./EventEmitter');
 
-Properties = require('./properties');
+Properties = require('./Properties');
 
-extend = require('../utils').extend;
+extend = require('./Mutate').extend;
 
 Card = (function(superClass) {
   var defaultProperties;
@@ -146,6 +146,6 @@ Card = (function(superClass) {
 
   return Card;
 
-})(Emitter);
+})(EventEmitter);
 
 module.exports = Card;

@@ -1,8 +1,8 @@
-Emitter                   = require '../event/emitter'
-Properties                = require './properties'
-{extend}                  = require '../utils'
+EventEmitter              = require './EventEmitter'
+Properties                = require './Properties'
+{extend}                  = require './Mutate'
 
-class Card extends Emitter
+class Card extends EventEmitter
 
   defaultProperties =
     guid:         readonly: yes,  validates: Properties.PropTypes.string
