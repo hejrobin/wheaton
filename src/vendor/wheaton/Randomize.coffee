@@ -22,7 +22,7 @@ class Randomize
       return _pickFromArray list
     null
 
-  _weightedFromArray: (list, weights...) =>
+  _weightedFromArray = (list, weights...) ->
     index = 0
     weight = []
     weightSum = 0
@@ -39,15 +39,15 @@ class Randomize
       index++
     return
 
-  _weightedFromObject: (list, weights...) ->
+  _weightedFromObject = (list, weights...) ->
     list[_weightedFromObject Object.keys(list), weights...]
 
-  @weighted: (list) ->
+  @weighted: (list, weights...) ->
     isArray = Array.isArray list
     if typeof list is 'object' and isArray is false
-      return _weightedFromObject list, weights...
+      return _weightedFromObject.apply(this, [list, weights...])
     else if isArray is true
-      return _weightedFromArray list, weights...
+      return _weightedFromArray.apply(this, [list, weights...])
     null
 
 

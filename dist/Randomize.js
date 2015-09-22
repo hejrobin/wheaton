@@ -1,5 +1,4 @@
 var Randomize,
-  bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   slice = [].slice;
 
 require('es5-shim');
@@ -7,11 +6,9 @@ require('es5-shim');
 require('es6-shim');
 
 Randomize = (function() {
-  var _pickFromArray, _pickFromObject;
+  var _pickFromArray, _pickFromObject, _weightedFromArray, _weightedFromObject;
 
-  function Randomize() {
-    this._weightedFromArray = bind(this._weightedFromArray, this);
-  }
+  function Randomize() {}
 
   Randomize.between = function(min, max) {
     var rndm;
@@ -40,7 +37,7 @@ Randomize = (function() {
     return null;
   };
 
-  Randomize.prototype._weightedFromArray = function() {
+  _weightedFromArray = function() {
     var index, key, list, ref, rndm, totalWeight, val, weight, weightSum, weights;
     list = arguments[0], weights = 2 <= arguments.length ? slice.call(arguments, 1) : [];
     index = 0;
@@ -64,19 +61,20 @@ Randomize = (function() {
     }
   };
 
-  Randomize.prototype._weightedFromObject = function() {
+  _weightedFromObject = function() {
     var list, weights;
     list = arguments[0], weights = 2 <= arguments.length ? slice.call(arguments, 1) : [];
     return list[_weightedFromObject.apply(null, [Object.keys(list)].concat(slice.call(weights)))];
   };
 
-  Randomize.weighted = function(list) {
-    var isArray;
+  Randomize.weighted = function() {
+    var isArray, list, weights;
+    list = arguments[0], weights = 2 <= arguments.length ? slice.call(arguments, 1) : [];
     isArray = Array.isArray(list);
     if (typeof list === 'object' && isArray === false) {
-      return _weightedFromObject.apply(null, [list].concat(slice.call(weights)));
+      return _weightedFromObject.apply(this, [list].concat(slice.call(weights)));
     } else if (isArray === true) {
-      return _weightedFromArray.apply(null, [list].concat(slice.call(weights)));
+      return _weightedFromArray.apply(this, [list].concat(slice.call(weights)));
     }
     return null;
   };
